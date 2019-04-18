@@ -1,1 +1,1 @@
-# programming-contest
+# Programming Contest
