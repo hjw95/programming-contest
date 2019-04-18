@@ -1,3 +1,5 @@
+package codechef.medium.palin;
+
 import java.io.*;
 
 class Program {
