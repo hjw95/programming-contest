@@ -2,7 +2,7 @@
 
 set -e
 
-javac Program.java
-java Program
+javac Solution.java
+java Solution
 
 rm *.class
