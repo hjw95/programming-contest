@@ -1,3 +1,5 @@
+package hackerrank.roadsandlibraries;
+
 import java.io.*;
 import java.util.*;
 
@@ -64,48 +66,35 @@ public class Solution {
 
     private static long solve(int n, int clib, int croad, Edge[] edges) {
         if (croad >= clib) {
-            return (long)clib * n;
+            return (long) clib * n;
         }
         Map<Integer, LinkedNode> nodeMap = new HashMap<Integer, LinkedNode>();
-        Set<Integer> notConnected = new HashSet<Integer>();
         for (int i = 0; i < n; i++) {
-            nodeMap.put(i, new LinkedNode(i));
-            notConnected.add(i);
+            LinkedNode newNode = new LinkedNode(i);
+            nodeMap.put(i, newNode);
         }
+        long nodesUsed = n;
+        long edgesUsed = 0;
         // Linking, simplified kruskal
         for (Edge e : edges) {
             LinkedNode uNode = nodeMap.get(e.u);
             LinkedNode vNode = nodeMap.get(e.v);
             if (uNode.find(e.v) == null) {
                 uNode.link(vNode);
+                edgesUsed++;
+                nodesUsed--;
             }
         }
         // Cost calculation
         long cost = 0;
-        while (notConnected.size() > 0) {
-            int start = notConnected.iterator().next();
-            notConnected.remove(start);
-            cost += clib;
-            LinkedNode startNode = nodeMap.get(start);
-            LinkedNode nextChain = startNode.next;
-            while (nextChain != null) {
-                notConnected.remove(nextChain.value);
-                cost += croad;
-                nextChain = nextChain.next;
-            }
-            LinkedNode prevChain = startNode.prev;
-            while (prevChain != null) {
-                notConnected.remove(prevChain.value);
-                cost += croad;
-                prevChain = prevChain.prev;
-            }
-        }
+        cost += nodesUsed * clib;
+        cost += edgesUsed * croad;
         return cost;
     }
 
     public static void main(String[] args) throws IOException {
-        // BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedReader br = new BufferedReader(new FileReader("input.txt"));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        // BufferedReader br = new BufferedReader(new FileReader("input.txt"));
         int q = Integer.parseInt(br.readLine());
 
         long[] solution = new long[q];
