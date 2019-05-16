@@ -3,23 +3,7 @@ import java.util.*;
 
 public class Solution {
 
-    // 0 Alvin
-    // 1 Bob
-    // 2 Ellen
-    // 3 Enrico
-    // 4 Gayus
-    // 5 Gihon
-    // 6 Hady
-    // 7 Hendry
-    // 8 Judo
-    // 9 Kezia
-    // 10 Peter
-    // 11 Steph
-    // 12 Theresa
-    // 13 Weni
-
-    // Car 0 Innova
-    // Car 1 Avanza
+    // region Constraint classes
 
     static abstract class Constraint {
         public Constraint(int f, int s) {
@@ -132,83 +116,9 @@ public class Solution {
         }
     }
 
-    static List<Constraint> constraints;
+    // endregion
 
-    static List<Integer> drivers;
-
-    static int validate(Set<Integer> first, Set<Integer> second) {
-        int violation = 0;
-        for (Constraint constraint : constraints) {
-            if (constraint.violated(first, second)) {
-                violation += 1;
-            }
-        }
-        return violation;
-    }
-
-    static void fillConstraint() {
-        constraints = new ArrayList<Constraint>();
-        drivers = new ArrayList<Integer>();
-
-        drivers.add(5);
-        drivers.add(7);
-        drivers.add(8);
-        drivers.add(10);
-
-        constraints.add(new ConstraintNotEqual(1, 4));
-        constraints.add(new ConstraintNotEqual(0, 1));
-
-        constraints.add(new ConstraintEqual(3, 12));
-        constraints.add(new ConstraintEqual(5, 11));
-        constraints.add(new ConstraintEqual(8, 9));
-        constraints.add(new ConstraintEqual(10, 13));
-
-        constraints.add(new ConstraintMustBeIn(1, 0));
-        constraints.add(new ConstraintMustBeIn(3, 0));
-        constraints.add(new ConstraintMustBeIn(4, 1));
-        constraints.add(new ConstraintMustBeIn(8, 1));
-
-        constraints.add(new ConstraintMustHaveOneDriver(0, 0));
-        constraints.add(new ConstraintMustHaveOneDriver(1, 0));
-    }
-
-    static int recurse(int violations, Set<Integer> added, Set<Integer> notAdded, Set<Integer> first,
-            Set<Integer> second) {
-        int result = validate(first, second);
-        if (result == 0 || result >= violations) {
-            return result;
-        }
-        for (int i = 0; i < 14; i++) {
-            if (added.contains(i)) {
-                continue;
-            }
-
-            added.add(i);
-            notAdded.remove(i);
-
-            // Try add to first
-            first.add(i);
-            int tryFirst = recurse(result, added, notAdded, first, second);
-            if (tryFirst == 0) {
-                result = 0;
-                break;
-            }
-            first.remove(i);
-
-            // Try add to second
-            second.add(i);
-            int trySecond = recurse(result, added, notAdded, first, second);
-            if (trySecond == 0) {
-                result = 0;
-                break;
-            }
-            second.remove(i);
-
-            added.remove(i);
-            notAdded.add(i);
-        }
-        return result;
-    }
+    // region Printing and label
 
     static void print(String label, Set<Integer> set) {
         System.out.print(label + " : ");
@@ -253,6 +163,84 @@ public class Solution {
         }
     }
 
+    // endregion
+
+    // region Data
+
+    static List<Constraint> constraints;
+
+    static List<Integer> drivers;
+
+    // endregion
+
+    static int validate(Set<Integer> first, Set<Integer> second) {
+        int violation = 0;
+        for (Constraint constraint : constraints) {
+            if (constraint.violated(first, second)) {
+                violation += 1;
+            }
+        }
+        return violation;
+    }
+
+    static int recurse(int violations, Set<Integer> added, Set<Integer> notAdded, Set<Integer> first,
+            Set<Integer> second) {
+        int result = validate(first, second);
+        if (result == 0 || result >= violations) {
+            return result;
+        }
+        for (int i = 0; i < 14; i++) {
+            if (added.contains(i)) {
+                continue;
+            }
+
+            added.add(i);
+            notAdded.remove(i);
+
+            // Try add to first
+            first.add(i);
+            int tryFirst = recurse(result, added, notAdded, first, second);
+            if (tryFirst == 0) {
+                result = 0;
+                break;
+            }
+            first.remove(i);
+
+            // Try add to second
+            second.add(i);
+            int trySecond = recurse(result, added, notAdded, first, second);
+            if (trySecond == 0) {
+                result = 0;
+                break;
+            }
+            second.remove(i);
+
+            added.remove(i);
+            notAdded.add(i);
+        }
+        return result;
+    }
+
+    static void fill(Set<Integer> added, Set<Integer> notAdded, Set<Integer> first, Set<Integer> second) {
+        Integer[] vals = new Integer[notAdded.size()];
+        notAdded.toArray(vals);
+        for (Integer i : vals) {
+            if (first.size() >= 7) {
+                break;
+            }
+            first.add(i);
+            added.add(i);
+            notAdded.remove(i);
+        }
+        vals = new Integer[notAdded.size()];
+        notAdded.toArray(vals);
+        for (Integer i : vals) {
+            second.add(i);
+            added.add(i);
+            notAdded.remove(i);
+        }
+    }
+
     static void solve() {
         Set<Integer> added = new HashSet<Integer>();
         Set<Integer> notAdded = new HashSet<Integer>();
@@ -269,6 +257,7 @@ public class Solution {
         print("Second : ", second);
         print("Free   : ", notAdded);
         System.out.println();
+        fill(added, notAdded, first, second);
         System.out.println("Innova :");
         for (int person : first) {
             System.out.println("- " + label(person));
@@ -277,10 +266,50 @@ public class Solution {
         for (int person : second) {
             System.out.println("- " + label(person));
         }
-        System.out.println("Free :");
-        for (int person : notAdded) {
-            System.out.println("- " + label(person));
-        }
+    }
+
+    static void fillConstraint() {
+        constraints = new ArrayList<Constraint>();
+        drivers = new ArrayList<Integer>();
+
+        drivers.add(5);
+        drivers.add(7);
+        drivers.add(8);
+        drivers.add(10);
+
+        // 0 Alvin
+        // 1 Bob
+        // 2 Ellen
+        // 3 Enrico
+        // 4 Gayus
+        // 5 Gihon
+        // 6 Hady
+        // 7 Hendry
+        // 8 Judo
+        // 9 Kezia
+        // 10 Peter
+        // 11 Steph
+        // 12 Theresa
+        // 13 Weni
+
+        // Car 0 Innova
+        // Car 1 Avanza
+
+        constraints.add(new ConstraintNotEqual(1, 4));
+        constraints.add(new ConstraintNotEqual(0, 1));
+
+        constraints.add(new ConstraintEqual(3, 12));
+        constraints.add(new ConstraintEqual(5, 11));
+        constraints.add(new ConstraintEqual(8, 9));
+        constraints.add(new ConstraintEqual(8, 12));
+        constraints.add(new ConstraintEqual(10, 13));
+
+        constraints.add(new ConstraintMustBeIn(1, 0));
+        constraints.add(new ConstraintMustBeIn(3, 0));
+        constraints.add(new ConstraintMustBeIn(4, 1));
+
+        constraints.add(new ConstraintMustHaveOneDriver(0, 0));
+        constraints.add(new ConstraintMustHaveOneDriver(1, 0));
     }
 
     public static void main(String[] args) throws IOException {
