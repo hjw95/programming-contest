@@ -265,6 +265,10 @@ public class Solution {
 
         int initialViolations = validate(first, second);
         recurse(initialViolations + 1, added, notAdded, first, second);
+        print("First  : ", first);
+        print("Second : ", second);
+        print("Free   : ", notAdded);
+        System.out.println();
         System.out.println("Innova :");
         for (int person : first) {
             System.out.println("- " + label(person));
