@@ -8,9 +8,8 @@ public class Program {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        String nLine = br.readLine();
-        int n = Integer.parseInt(nLine);
-
+        br.readLine();
+        
         String arLine = br.readLine();
         String[] arLineTokens = arLine.trim().split("\\s+");
 
